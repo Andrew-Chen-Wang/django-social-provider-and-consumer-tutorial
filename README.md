@@ -1,13 +1,17 @@
-# OAuth Server and Client: Two-Sided Implementation of OAuth + OpenID Connect
+# OAuth Provider and Client: Two-Sided Implementation of OAuth + OpenID Connect
 
-Implementing a "server" that becomes a social provider
+Implementing a "server"/provider that becomes a social provider
 (i.e. the Velnota in "Signup with Velnota"),
-and a client that allows its users to register using
-said server.
+and a "client"/consumer that allows its users to register using
+said server/provider.
 
-This is mostly for learning but also, so I can replicate
-this process really fast. No Googling necessary. All code
-is just provided here.
+This is mostly for learning but also **I can replicate
+this process really fast. No Googling necessary**. All code
+is just provided here. Note that the terminology
+is incorrect; it's not really "server" and "client"
+but more like "provider" and "consumer". It was midnight;
+I was tired; couldn't think straight after finals; I'm sorry.
+So anyway, I started blasting.
 
 ---
 ## Tutorial
@@ -39,17 +43,19 @@ ish. For example, a registration page would be helpful for server.
 ### Instructions
 
 The following is happening in the [server](./server) folder.
+You can use it as reference in case you get stuck or want
+to double-check something.
 
 We assume that server is a website, and not just some random
 rest framework. It must have a proper website to login from.
-NGL though, you can also start from scratch, and there's still
-resources to get you up to speed in like 30 minutes TOPS (it's a lot).
+NGL though, you can also start from scratch, and there's still resources
+in Notes sections to get you up to speed in total 30 minutes TOPS (it's a lot).
 
 For more details or if you think this is out of date, head to their
 [docs](https://django-oauth-toolkit.readthedocs.io/en/latest/tutorial/tutorial_01.html).
 
 <details open>
-<summary>Server instructions</summary>
+<summary>Server/Provider instructions</summary>
 
 1. Follow the installation instructions at
    [django-oauth-toolkit's docs](https://django-oauth-toolkit.readthedocs.io/en/latest/install.html)
@@ -63,20 +69,20 @@ For more details or if you think this is out of date, head to their
    If you are just starting out, read Note 3.
 1. `python manage.py migrate && python manage.py createsuperuser`
 1. Start the server with a different port like: `python manage.py runserver 8001`
+1. Follow the [OpenID Connect tutorial](https://django-oauth-toolkit.readthedocs.io/en/latest/oidc.html).
+   Use the RSA algorithm. Use OpenID Connect Authorization flow. Please don't use
+   Implicit flow for both OAuth (deprecated too) and OIDC.
+   Just note that for an SPA if you're starting from scratch might want to use
+   Authorization flow with public claim.
+   [Ref](https://medium.com/@robert.broeckelmann/securely-using-the-oidc-authorization-code-flow-and-a-public-client-with-single-page-applications-55e0a648ab3a)
 1. Head to: http://localhost:8001/o/applications/ and login.
-1. For the next few instructions, refer to the docs but also COME BACK.
-   If you need to, refer to Notes 4+ if you need to make a decision.
-   Those notes make the decision for you so you can speed up the process:
-   https://django-oauth-toolkit.readthedocs.io/en/1.5.0/tutorial/tutorial_01.html#create-an-oauth2-client-application
-   however you should note that I've linked to a specific version to make sure
-   there is no link breaking for far in the future usage.
-   Test out the `latest` doc page; if it works, then use that instead.
-1. Are you back? Great. We need to set up OpenID connect. It's a standardized
-   way we can give information to registered social providing clients.
-   Basically, follow their OIDC tutorial and use RSA:
-   https://django-oauth-toolkit.readthedocs.io/en/stable/oidc.html
-   To complement, the client tutorial, we're going to add some fields
-   to our current user to make this tutorial more valuable.
+1. For the next few instructions, refer to the Part 1 of the tutorial.
+   Link to helpful tool to
+   [choose resources](https://medium.com/@robert.broeckelmann/when-to-use-which-oauth2-grants-and-oidc-flows-ec6a5c00d864).
+   Refer to Notes 4+ if you need to make a decision (specifically made for social provider).
+   Those notes make the decision for you so you can speed up the process. For now,
+   only complete Part 1 of the tutorial (the rest you can understand alone):
+   https://django-oauth-toolkit.readthedocs.io/en/stable/tutorial/tutorial_01.html#create-an-oauth2-client-application
 
 <details>
 <summary>Notes for Server Instructions</summary>
@@ -159,15 +165,19 @@ For more details or if you think this is out of date, head to their
    </form>
    {% endblock %}
    ```
-1. Choose RS256 when registering. It allows for people to
-   verify via public key.
+1. The following is for social provider specific decisions.
+   For "Create an OAuth 2 Client Application", save the client id and secret.
+   Select "Confidential" client type. "Authorization code" for
+   authorization grant type. For redirect URI:
+   http://django-oauth-toolkit.herokuapp.com/consumer/exchange/
+   Algorithm is RSA SHA-2 256.
 
 </details>
 <!-- End of server instructions -->
 </details>
 
 <details open>
-<summary>Client instruction</summary>
+<summary>Client/Consumer instructions</summary>
 
 1. Set up django-allauth
 1. Let's create a provider. I'm basing this off
@@ -242,6 +252,18 @@ For more details or if you think this is out of date, head to their
 </details>
 <!-- End of client instructions -->
 </details>
+
+---
+### Extra Notes
+
+I understand the terminology is wrong (i.e. server and client), but I couldn't really
+come up with good terms to use, so I stuck with it (at midnight). Proper terms are
+provider and consumer respectively. I'll rework the names of the projects.
+
+The provider is the one where the user initially signs up.
+The consumer is the one where the user signs up on a different
+website but uses the initial website's "account" to authenticate
+on the second site.
 
 ---
 ### Credit and License
