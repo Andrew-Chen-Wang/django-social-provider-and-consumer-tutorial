@@ -15,6 +15,7 @@ from pathlib import Path
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 # IMPORTANT SETTINGS! IMPORTANT SETTINGS! IMPORTANT SETTINGS! IMPORTANT SETTINGS!
+# These are settings I changed from Django's default settings or added
 # -------------------------------------------------------------------------------
 
 # Make sure this is an ENVIRONMENT VARIABLE in production
@@ -123,6 +124,7 @@ TEMPLATES = [
 ]
 
 # OTHER SETTINGS! OTHER SETTINGS! OTHER SETTINGS! OTHER SETTINGS! OTHER SETTINGS!
+# These are part of the default Django project set up settings
 # -------------------------------------------------------------------------------
 
 # Quick-start development settings - unsuitable for production

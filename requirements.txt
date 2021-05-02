@@ -6,3 +6,4 @@ django-cors-headers==3.7.0  # https://github.com/adamchainz/django-cors-headers
 
 # Consumer
 django-allauth==0.44.0  # https://github.com/pennersr/django-allauth
+requests==2.25.1  # https://github.com/psf/requests

@@ -80,7 +80,8 @@ For more details or if you think this is out of date, head to their
    Link to helpful tool to
    [choose resources](https://medium.com/@robert.broeckelmann/when-to-use-which-oauth2-grants-and-oidc-flows-ec6a5c00d864).
    Refer to Notes 4+ if you need to make a decision (specifically made for social provider).
-   Those notes make the decision for you so you can speed up the process. For now,
+   Those notes make the decision for you so you can speed up the process. Just know for
+   this tutorial, redirect URI is http://localhost:8001/accounts/profile/ For now,
    only complete Part 1 of the tutorial (the rest you can understand alone):
    https://django-oauth-toolkit.readthedocs.io/en/stable/tutorial/tutorial_01.html#create-an-oauth2-client-application
 
@@ -168,8 +169,8 @@ For more details or if you think this is out of date, head to their
 1. The following is for social provider specific decisions.
    For "Create an OAuth 2 Client Application", save the client id and secret.
    Select "Confidential" client type. "Authorization code" for
-   authorization grant type. For redirect URI:
-   http://django-oauth-toolkit.herokuapp.com/consumer/exchange/
+   authorization grant type. For redirect URI if you're using allauth from
+   the next tutorial below: http://localhost:8000/accounts/profile/
    Algorithm is RSA SHA-2 256.
 
 </details>
@@ -179,70 +180,21 @@ For more details or if you think this is out of date, head to their
 <details open>
 <summary>Client/Consumer instructions</summary>
 
-1. Set up django-allauth
 1. Let's create a provider. I'm basing this off
    [allauth's Google implementation](https://github.com/pennersr/django-allauth/blob/80e07a25803baea4e603251254c7d07ef2ad5bb5/allauth/socialaccount/providers/google/provider.py).
-   In some random but dedicated file:
-   ```python
-   from allauth.account.models import EmailAddress
-   from allauth.socialaccount.app_settings import QUERY_EMAIL
-   from allauth.socialaccount.providers.base import AuthAction, ProviderAccount
-   from allauth.socialaccount.providers.oauth2.provider import OAuth2Provider
-
-   class Scope:
-      EMAIL = "email"
-      PROFILE = "profile"
-
-   class GoogleAccount(ProviderAccount):
-       def get_profile_url(self):
-           return self.account.extra_data.get("link")
-
-       def get_avatar_url(self):
-           return self.account.extra_data.get("picture")
-
-       def to_str(self):
-           dflt = super(GoogleAccount, self).to_str()
-           return self.account.extra_data.get("name", dflt)
-
-
-   class GoogleProvider(OAuth2Provider):
-       id = "google"
-       name = "Google"
-       account_class = GoogleAccount
-
-       def get_default_scope(self):
-           scope = [Scope.PROFILE]
-           if QUERY_EMAIL:
-               scope.append(Scope.EMAIL)
-           return scope
-
-       def get_auth_params(self, request, action):
-           ret = super(GoogleProvider, self).get_auth_params(request, action)
-           if action == AuthAction.REAUTHENTICATE:
-               ret["prompt"] = "select_account consent"
-           return ret
-
-       def extract_uid(self, data):
-           return str(data["id"])
-
-       def extract_common_fields(self, data):
-           return dict(
-               email=data.get("email"),
-               last_name=data.get("family_name"),
-               first_name=data.get("given_name"),
-           )
-
-       def extract_email_addresses(self, data):
-           ret = []
-           email = data.get("email")
-           if email and data.get("verified_email"):
-               ret.append(EmailAddress(email=email, verified=True, primary=True))
-           return ret
-
-   provider_classes = [GoogleProvider]
-   ```
-1. In `INSTALLED_APPS`, add the dotted path to that file.
-   This must come after `allauth.socialaccount`
+   Visit the following files in the consumer folder:
+   [public/urls.py](./consumer/public/urls.py),
+   [public/views.py](./consumer/public/views.py),
+   [public/our_provider.py](./consumer/public/our_provider.py),
+   [public/migrations/0001_initial.py](./consumer/public/migrations/0001_initial.py),
+   [consumer/consumer/urls.py](./consumer/consumer/urls.py),
+   and finally the upper portion of settings:
+   [consumer/consumer/settings.py](./consumer/consumer/urls.py).
+1. Finally, run both servers. The consumer should be using
+   `python manage.py runserver` and the provider/server should be using
+   `python manage.py runserver 8001`.
+1. Go to the consumer social login url, and you're done!:
+   http://127.0.0.1:8000/accounts/custom/login/callback/
 
 <details>
 <summary>Notes</summary>
@@ -254,6 +206,11 @@ For more details or if you think this is out of date, head to their
 </details>
 
 ---
+### FAQ
+
+If you don't need regular signup, create a default account adapter
+in Allauth and set the `is_open_for_signup` method to return False.
+
 ### Extra Notes
 
 I understand the terminology is wrong (i.e. server and client), but I couldn't really
