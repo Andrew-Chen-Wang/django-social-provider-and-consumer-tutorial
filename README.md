@@ -81,9 +81,14 @@ For more details or if you think this is out of date, head to their
    [choose resources](https://medium.com/@robert.broeckelmann/when-to-use-which-oauth2-grants-and-oidc-flows-ec6a5c00d864).
    Refer to Notes 4+ if you need to make a decision (specifically made for social provider).
    Those notes make the decision for you so you can speed up the process. Just know for
-   this tutorial, redirect URI is http://localhost:8001/accounts/profile/ For now,
-   only complete Part 1 of the tutorial (the rest you can understand alone):
+   this tutorial, redirect URI is http://localhost:8000/accounts/custom/login/callback/
+   For now, only complete Part 1 of the tutorial (the rest you can understand alone):
    https://django-oauth-toolkit.readthedocs.io/en/stable/tutorial/tutorial_01.html#create-an-oauth2-client-application
+
+**IT IS EXTREMELY IMPORTANT you use 127.0.0.1:8001 throughout this tutorial**.
+You must use the same exact domain the entire time. The domains for
+provider and consumer CANNOT be the same otherwise the session cookies
+will be mixed up.
 
 <details>
 <summary>Notes for Server Instructions</summary>
@@ -171,7 +176,13 @@ For more details or if you think this is out of date, head to their
    Select "Confidential" client type. "Authorization code" for
    authorization grant type. For redirect URI if you're using allauth from
    the next tutorial below: http://localhost:8000/accounts/profile/
-   Algorithm is RSA SHA-2 256.
+   Algorithm is RSA SHA-2 256. When developing with the consumer on port 8000,
+   make sure you stay on localhost. Anytime you mention anything with port 8001,
+   i.e. the provider, make sure you are on 127.0.0.1 or basically a completely
+   different domain/host.
+1. The redirect uri should have the domain be the same as the way you're accessing
+   the consumer. So if you're logging in from http://localhost:8000, then your
+   redirect uri must also use localhost:8000
 
 </details>
 <!-- End of server instructions -->
@@ -185,21 +196,26 @@ For more details or if you think this is out of date, head to their
    Visit the following files in the consumer folder:
    [public/urls.py](./consumer/public/urls.py),
    [public/views.py](./consumer/public/views.py),
-   [public/our_provider.py](./consumer/public/our_provider.py),
+   [public/provider.py](./consumer/public/provider.py),
    [public/migrations/0001_initial.py](./consumer/public/migrations/0001_initial.py),
    [consumer/consumer/urls.py](./consumer/consumer/urls.py),
    and finally the upper portion of settings:
    [consumer/consumer/settings.py](./consumer/consumer/urls.py).
+1. Make sure your provider is named `provider.py` or else django-allauth can't find
+   your provider.
 1. Finally, run both servers. The consumer should be using
    `python manage.py runserver` and the provider/server should be using
    `python manage.py runserver 8001`.
-1. Go to the consumer social login url, and you're done!:
-   http://127.0.0.1:8000/accounts/custom/login/callback/
+1. Go to your consumer login url: http://localhost:8000/accounts/login/.
+   You should see the `sign in below: custom` where `custom` was the provider
+   name I chose.
 
 <details>
 <summary>Notes</summary>
 
-1.
+1. The redirect uri should have the domain be the same as the way you're accessing
+   the consumer. So if you're logging in from http://localhost:8000, then your
+   redirect uri must also use localhost:8000
 
 </details>
 <!-- End of client instructions -->

@@ -10,6 +10,10 @@ from .provider import CustomProvider
 
 class CustomOAuth2Adapter(OAuth2Adapter):
     provider_id = CustomProvider.id
+    # THESE DOMAINS ARE DIFFERENT FROM CONSUMER DOMAINS. I've been using
+    # localhost:8000 for the consumer. For me, I MUST use 127.0.0.1
+    # here so that the provider has a different domain and thus a different
+    # session cookie between the consumer and provider.
     access_token_url = "http://127.0.0.1:8001/o/token/"
     authorize_url = "http://127.0.0.1:8001/o/authorize/"
     profile_url = "http://127.0.0.1:8001/o/userinfo/"
