@@ -10,6 +10,11 @@ class CustomOAuth2Validator(OAuth2Validator):
         """
         # The default for sub is request.user.id, but the clients most likely
         # don't need an ID from your server. That's just my opinion security-wise.
+        # In my context, I only need a provider for authentication purposes.
+        # However, you might have an endpoint to grab some private content.
+        # Then, I'd send sub as the request.user.id to help out your database
+        # and send "email": request.user.email as an addition for the client's
+        # authentication purposes.
         return {
             "sub": request.user.email,
             "first_name": request.user.first_name,
@@ -21,6 +26,9 @@ class CustomOAuth2Validator(OAuth2Validator):
         This just calls self.get_additional_claims, but both are not encrypted!
         This is different in that this is for the /o/userinfo/ endpoint, whereas
         the other is just to get claims during regular authorization flow.
+
+        You can take a look at a sample response here:
+        https://openid.net/specs/openid-connect-core-1_0.html#UserInfoResponse
 
         Example Usage:
         claims = super().get_userinfo_claims(request)

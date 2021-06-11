@@ -77,7 +77,7 @@ HsVv2VG5qyFayDLMTTjJ/fSeXYKjbT9pPTZrmK7FGeIn3QseTVOfLpdfQoA=
 OAUTH2_PROVIDER = {
     "OIDC_ENABLED": True,
     "OIDC_RSA_PRIVATE_KEY": OIDC_RSA_PRIVATE_KEY,
-    "OAUTH2_VALIDATOR_CLASS": "server.server.oidc.CustomOAuth2Validator",
+    "OAUTH2_VALIDATOR_CLASS": "server.oidc.CustomOAuth2Validator",
     "SCOPES": {
         "openid": "OpenID Connect scope",
     },

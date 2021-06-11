@@ -38,17 +38,47 @@ INSTALLED_APPS = [
 
 SITE_ID = 1
 
+# This is if you want the scope to have scope=email
+# SOCIALACCOUNT_QUERY_EMAIL = True
+
 SOCIALACCOUNT_PROVIDERS = {
     "custom": {
         "APP": {
             # This is from your application.
             "client_id": "wOzvSUDj4oWKOVJbiapZsZSEj6eqWjwhRFAtTBm1",
-            "client_secret": "PTKjyF18FeZp9FbQJdc0CH41sZTAsvA2XUuvWx4oeQWghr3h73t"
+            "secret": "PTKjyF18FeZp9FbQJdc0CH41sZTAsvA2XUuvWx4oeQWghr3h73t"
             "uopbNP0brdG5iIinJGCQpgkCo9Cvf1XxCad4TH95BDrfUKTFSN5Kiek0wXnZSV"
             "Vd0KWLkTj42tllG",
+            # "SCOPE" key doesn't work for some reason. We use provider.py
+            # to overload the default scope "SCOPE": ["openid"],
         }
     }
 }
+
+TEMPLATES = [
+    {
+        "BACKEND": "django.template.backends.django.DjangoTemplates",
+        "DIRS": ["templates"],
+        "APP_DIRS": True,
+        "OPTIONS": {
+            "context_processors": [
+                "django.template.context_processors.debug",
+                "django.template.context_processors.request",
+                "django.contrib.auth.context_processors.auth",
+                "django.contrib.messages.context_processors.messages",
+            ],
+        },
+    },
+]
+
+# I've chosen to disable regular mail-based signup, so I've implemented
+# an adapter from django-allauth. It's disabled in GitHub since the following
+# line is commented out, but you can totally take advantage of allauth's extensibility
+ACCOUNT_ADAPTER = "public.adapters.AccountAdapter"
+
+# Only needed if you want an adapter. You don't need this
+# if you don't implement adapter.py
+SOCIALACCOUNT_ADAPTER = "public.adapters.SocialAccountAdapter"
 
 # OTHER SETTINGS! OTHER SETTINGS! OTHER SETTINGS! OTHER SETTINGS! OTHER SETTINGS!
 # These are part of the default Django project set up settings
@@ -76,22 +106,6 @@ MIDDLEWARE = [
 ]
 
 ROOT_URLCONF = "consumer.urls"
-
-TEMPLATES = [
-    {
-        "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": [],
-        "APP_DIRS": True,
-        "OPTIONS": {
-            "context_processors": [
-                "django.template.context_processors.debug",
-                "django.template.context_processors.request",
-                "django.contrib.auth.context_processors.auth",
-                "django.contrib.messages.context_processors.messages",
-            ],
-        },
-    },
-]
 
 WSGI_APPLICATION = "consumer.wsgi.application"
 

@@ -5,14 +5,14 @@ from allauth.socialaccount.providers.oauth2.views import (
     OAuth2LoginView,
 )
 
-from .our_provider import CustomProvider
+from .provider import CustomProvider
 
 
 class CustomOAuth2Adapter(OAuth2Adapter):
     provider_id = CustomProvider.id
-    access_token_url = "http://localhost:8001/o/token/"
-    authorize_url = "http://localhost:8001/o/authorize/"
-    profile_url = "http://localhost:8001/o/userinfo/"
+    access_token_url = "http://127.0.0.1:8001/o/token/"
+    authorize_url = "http://127.0.0.1:8001/o/authorize/"
+    profile_url = "http://127.0.0.1:8001/o/userinfo/"
 
     def complete_login(self, request, app, token, **kwargs):
         resp = requests.get(

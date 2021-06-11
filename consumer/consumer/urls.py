@@ -19,5 +19,8 @@ from django.urls import include, path
 urlpatterns = [
     path("admin/", admin.site.urls),
     path("accounts/", include("allauth.urls")),
+    # The below is a wacky configuration that I never bothered to fix
+    # just write a test case that checks that accounts/custom/login/callback
+    # exists via django.urls.reverse
     path("accounts/", include("public.urls", namespace="public")),
 ]
