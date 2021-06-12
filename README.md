@@ -63,7 +63,9 @@ For more details or if you think this is out of date, head to their
 1. Add this to `urls.py`: `path("o/", include('oauth2_provider.urls', namespace='oauth2_provider')),`
 1. Add `corsheaders` to `MIDDLEWARE`: `'corsheaders.middleware.CorsMiddleware',`.
    Please read Note 1 below for placement.
-1. In your settings, also add: `CORS_ORIGIN_ALLOW_ALL = True`
+1. In your settings, also add: `CORS_URLS_REGEX = r"^/o/.+$"`. In regex, this means you allow any
+   url to be accessed from any origin whose url path MUST START with `/o/` and must have more characters
+   following that `/o/` prefix, i.e. there must be more to the path to be valid.
 1. Add this to your login form: `<input type="hidden" name="next" value="{{ next }}" />`.
    It is required that `server` is a website that has a user-faced login form.
    If you are just starting out, read Note 3.
