@@ -54,8 +54,13 @@ in Notes sections to get you up to speed in total 30 minutes TOPS (it's a lot).
 For more details or if you think this is out of date, head to their
 [docs](https://django-oauth-toolkit.readthedocs.io/en/latest/tutorial/tutorial_01.html).
 
+Table of Contents
+- Server/Provider instructions
+- Web Client/Consumer instructions
+- Mobile Client/Consumer instructions
+
 <details open>
-<summary>Server/Provider instructions</summary>
+<summary><strong>Server/Provider instructions</strong></summary>
 
 1. Follow the installation instructions at
    [django-oauth-toolkit's docs](https://django-oauth-toolkit.readthedocs.io/en/latest/install.html)
@@ -192,9 +197,10 @@ will be mixed up.
 </details>
 
 <details open>
-<summary>Client/Consumer instructions</summary>
+<summary><strong>Web Client/Consumer instructions</strong></summary>
 
-1. Let's create a provider. I'm basing this off
+1. Let's create a consumer using provider compatible workflows from django-allauth. 
+   I'm basing this off
    [allauth's Google implementation](https://github.com/pennersr/django-allauth/blob/80e07a25803baea4e603251254c7d07ef2ad5bb5/allauth/socialaccount/providers/google/provider.py).
    Visit the following files in the consumer folder:
    [public/urls.py](./consumer/public/urls.py),
@@ -204,8 +210,9 @@ will be mixed up.
    [consumer/consumer/urls.py](./consumer/consumer/urls.py),
    and finally the upper portion of settings:
    [consumer/consumer/settings.py](./consumer/consumer/urls.py).
-1. Make sure your provider is named `provider.py` or else django-allauth can't find
-   your provider.
+1. Make sure your provider lives in a file called `provider.py` or else django-allauth 
+   can't find your provider. Also make sure that `provider.py` is in an app
+   that is in the `INSTALLED_APPS` list.
 1. Finally, run both servers. The consumer should be using
    `python manage.py runserver` and the provider/server should be using
    `python manage.py runserver 8001`.
@@ -222,6 +229,55 @@ will be mixed up.
 
 </details>
 <!-- End of client instructions -->
+</details>
+
+<details open>
+<summary><strong>Mobile Client/Consumer instructions</strong></summary>
+
+<details><summary>Explanation</summary>
+
+Before we begin, I want to clarify how this works from the mobile perspective.
+We will still be using django-allauth, but for authentication purposes,
+we will be using `djangorestframework-simplejwt`. It's an alternative to
+Django's session authentication by using stateless JWT tokens. You can also
+set up `django-oauth-toolkit` for your consumer instead of `simplejwt` (they're
+the exact same thing except OAuth gives "scopes" permissions out-of-the-box).
+
+Additionally, if you'd like to see an example code that hosts the mobile app,
+visit https://github.com/Andrew-Chen-Wang/react-native-oauth-login for a fuller
+explanation with a for using React Native.
+
+Anyways, the explanation: imagine you're on an app. You press a button that says
+"Sign In with Velnota" (no register button since `django-allauth` auto registers 
+on first login; this can be changed with `SOCIALACCOUNT_AUTO_SIGNUP=False` in 
+your settings). This button is actually a URL that takes you to a social login page
+provided by django-allauth, specifically 
+http://localhost:8000/accounts/custom/login/?process=login. If you recall, 
+`/accounts/custom/` is the beginning of a path to a provider. Allauth has a similar
+format for other OAuth providers (e.g. Google: `/accounts/google/`). This URL
+immediately redirects you to Google's login page. Assuming the user logged in correctly,
+under your registered callback, the consumer's Django receives an access and refresh 
+token.
+
+Using `SimpleJWT`, we create our own tokens for authenticating against our own backend.
+You can also use `rest_framework.auth_token`, but it's not as safe and not as 
+"standard." Anyhow, the tokens that the consumer (not the mobile client) received
+is encrypted and embedded into a SimpleJWT access and refresh token payload.
+The consumer sends all four tokens: two from SimpleJWT (the consumer's auth
+tokens) and two from the provider (the provider's auth tokens).
+
+We do this because the tokens given by the provider is for authorization against
+the **provider's** endpoints, not the consumers (having trouble? Imagine you have a
+project but don't want to send emails. Provider is Google, so we use Google to
+authenticate. We have several endpoints for our app to use; those endpoints are OURS.
+Thus, we are coding this on our project, that is the consumer, and not on the provider,
+which is Google in this case).
+
+So the tokens we receive on the mobile app is for going to the endpoints
+on the consumer and going to authorized-endpoints on the provider.
+
+</details>
+
 </details>
 
 ---
