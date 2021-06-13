@@ -1,4 +1,4 @@
-Django==3.2
+Django==3.2.4
 
 # Server/Provider
 django-oauth-toolkit==1.5.0  # https://github.com/jazzband/django-oauth-toolkit
