@@ -63,9 +63,10 @@ For more details or if you think this is out of date, head to their
 1. Add this to `urls.py`: `path("o/", include('oauth2_provider.urls', namespace='oauth2_provider')),`
 1. Add `corsheaders` to `MIDDLEWARE`: `'corsheaders.middleware.CorsMiddleware',`.
    Please read Note 1 below for placement.
-1. In your settings, also add: `CORS_URLS_REGEX = r"^/o/.+$"`. In regex, this means you allow any
-   url to be accessed from any origin whose url path MUST START with `/o/` and must have more characters
-   following that `/o/` prefix, i.e. there must be more to the path to be valid.
+1. In your settings, add: `PKCE_REQUIRED = True` and `CORS_URLS_REGEX = r"^/o/.+$"`.
+   In regex, this means you allow any url to be accessed from any origin whose url path
+   MUST START with `/o/` and must have more characters
+   following that `/o/` prefix (i.e. there must be more to the path to be valid).
 1. Add this to your login form: `<input type="hidden" name="next" value="{{ next }}" />`.
    It is required that `server` is a website that has a user-faced login form.
    If you are just starting out, read Note 3.
@@ -177,10 +178,10 @@ will be mixed up.
    For "Create an OAuth 2 Client Application", save the client id and secret.
    Select "Confidential" client type. "Authorization code" for
    authorization grant type. For redirect URI if you're using allauth from
-   the next tutorial below: http://localhost:8000/accounts/profile/
+   the next tutorial below: http://localhost:8000/accounts/custom/login/callback/
    Algorithm is RSA SHA-2 256. When developing with the consumer on port 8000,
    make sure you stay on localhost. Anytime you mention anything with port 8001,
-   i.e. the provider, make sure you are on 127.0.0.1 or basically a completely
+   in this case the provider, make sure you are on 127.0.0.1 or basically a completely
    different domain/host.
 1. The redirect uri should have the domain be the same as the way you're accessing
    the consumer. So if you're logging in from http://localhost:8000, then your

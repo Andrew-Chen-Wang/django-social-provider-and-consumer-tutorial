@@ -83,6 +83,8 @@ OAUTH2_PROVIDER = {
     },
 }
 
+PKCE_REQUIRED = True
+
 INSTALLED_APPS = [
     "django.contrib.admin",
     "django.contrib.auth",

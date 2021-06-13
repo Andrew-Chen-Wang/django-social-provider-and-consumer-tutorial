@@ -55,6 +55,14 @@ SOCIALACCOUNT_PROVIDERS = {
     }
 }
 
+# I have an index.html set up here
+LOGIN_REDIRECT_URL = "/"
+
+# These values are the default set by allauth
+# ---------------------------------------------------------------
+SOCIALACCOUNT_AUTO_SIGNUP = True
+# ---------------------------------------------------------------
+
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
