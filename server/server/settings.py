@@ -81,8 +81,19 @@ OAUTH2_PROVIDER = {
     "SCOPES": {
         "openid": "OpenID Connect scope",
     },
-    "PKCE_REQUIRED": True,
     "REQUEST_APPROVAL_PROMPT": "auto",
+    # Default is False anyway, but I wanted to make a note: use True
+    # iff your OAuth clients are mobile apps. Normal JS and HTML
+    # files delivered by Django don't need PKCE. SPAs should deploy via
+    # Django templates with a script tag pointing to your CDN to take
+    # advantage of session authentication and Django allauth.
+    # PKCE_REQUIRED is very useful when you know hijacking is possible
+    # which basically happens during the redirect; so this, imo, should
+    # be left to mobile app clients only. And if you serve both, it really
+    # won't matter. So long as your request includes a code_challenge,
+    # OAuth will check the challenge with the verifier. In other words,
+    # you really don't need to set this to True :P
+    "PKCE_REQUIRED": False,
 }
 
 INSTALLED_APPS = [

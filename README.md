@@ -68,11 +68,11 @@ Table of Contents
 1. Add this to `urls.py`: `path("o/", include('oauth2_provider.urls', namespace='oauth2_provider')),`
 1. Add `corsheaders` to `MIDDLEWARE`: `'corsheaders.middleware.CorsMiddleware',`.
    Please read Note 1 below for placement.
-1. In your settings, add: `"PKCE_REQUIRED": True,` and
-   `"REQUEST_APPROVAL_PROMPT": "auto"` in the `OAUTH2_PROVIDER` dictionary in your
-   settings file and `CORS_URLS_REGEX = r"^/o/.+$"`. The `REQUEST_APPROVAL_PROMPT`
+1. In your settings, add: `"REQUEST_APPROVAL_PROMPT": "auto"` in the 
+   `OAUTH2_PROVIDER` dictionary in your settings file. The `REQUEST_APPROVAL_PROMPT`
    being set to `auto` means that a user that already signed up doesn't need to
-   authorize the consumer (via a button click) for the rest of the user's login sessions.
+   authorize the consumer (via a button click) for the rest of the user's login 
+   sessions. Add `CORS_URLS_REGEX = r"^/o/.+$"`.
    In regex, this means you allow any url to be accessed from any origin whose url path
    MUST START with `/o/` and must have more characters
    following that `/o/` prefix (i.e. there must be more to the path to be valid).
