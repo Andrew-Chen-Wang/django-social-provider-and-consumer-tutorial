@@ -8,5 +8,10 @@
 
 <p>Logged {% if request.user.is_authenticated %}in{% else %}out{% endif %}</p>
 
+{% if request.user.is_anonymous %}
+<a href="/accounts/login/">Login from here</a>
+{% else %}
+<a href="/accounts/logout/">Logout from here</a>
+{% endif %}
 </body>
 </html>

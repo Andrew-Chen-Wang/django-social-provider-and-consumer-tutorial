@@ -81,9 +81,9 @@ OAUTH2_PROVIDER = {
     "SCOPES": {
         "openid": "OpenID Connect scope",
     },
+    "PKCE_REQUIRED": True,
+    "REQUEST_APPROVAL_PROMPT": "auto",
 }
-
-PKCE_REQUIRED = True
 
 INSTALLED_APPS = [
     "django.contrib.admin",
