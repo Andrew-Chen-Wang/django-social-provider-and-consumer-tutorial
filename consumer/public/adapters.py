@@ -31,6 +31,12 @@ class SocialAccountAdapter(DefaultSocialAccountAdapter):
     def is_open_for_signup(self, request, sociallogin):
         return True
 
+    def new_user(self, request, sociallogin):
+        return super(SocialAccountAdapter, self).new_user(request, sociallogin)
+
+    def populate_user(self, request, sociallogin, data):
+        return super(SocialAccountAdapter, self).populate_user(request, sociallogin, data)
+
     # THIS WAS COMPLETELY USELESS (I think. Can't remember)
     # def authentication_error(
     #     self,

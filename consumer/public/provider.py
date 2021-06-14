@@ -1,3 +1,9 @@
+import secrets
+import string
+import urllib.parse
+import hashlib
+import base64
+
 from allauth.account.models import EmailAddress
 from allauth.socialaccount.app_settings import QUERY_EMAIL
 from allauth.socialaccount.providers.base import AuthAction, ProviderAccount
@@ -29,6 +35,12 @@ class CustomAccount(ProviderAccount):
         return self.account.extra_data.get("name", dflt)
 
 
+def generate_code_verifier() -> str:
+    VOCAB = string.ascii_letters + string.digits + "-._~"
+    length = max(43, secrets.randbelow(129))
+    return "".join([secrets.choice(VOCAB) for i in range(0, length)])
+
+
 class CustomProvider(OAuth2Provider):
     id = "custom"  # Replace with your app/provider name
     name = "Custom"
@@ -50,6 +62,13 @@ class CustomProvider(OAuth2Provider):
         ret = super(CustomProvider, self).get_auth_params(request, action)
         if action == AuthAction.REAUTHENTICATE:
             ret["prompt"] = "select_account consent"
+        # Add PKCE parameters
+        code_verifier = generate_code_verifier()
+        # store this state token somewhere so it can be looked up
+        challenge = hashlib.sha256(code_verifier.encode()).digest()
+        encoded = base64.b64encode(challenge)
+        urlencoded = urllib.parse.quote_plus(encoded)
+        ret.update(code_challenge=urlencoded, code_challenge_method="S256")
         return ret
 
     def extract_uid(self, data):
