@@ -185,7 +185,7 @@ will be mixed up.
    ```
 1. The following is for social provider specific decisions.
    For "Create an OAuth 2 Client Application", save the client id and secret.
-   Select "Confidential" client type. "Authorization code" for
+   Select "Public" client type (Confidential is for CLIs). "Authorization code" for
    authorization grant type. For redirect URI if you're using allauth from
    the next tutorial below: http://localhost:8000/accounts/custom/login/callback/
    Algorithm is RSA SHA-2 256. When developing with the consumer on port 8000,
