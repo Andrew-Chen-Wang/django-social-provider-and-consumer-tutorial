@@ -82,7 +82,13 @@ OAUTH2_PROVIDER = {
         "openid": "OpenID Connect scope",
     },
     "REQUEST_APPROVAL_PROMPT": "auto",
-    # Default is False anyway, but I wanted to make a note: use True
+    # https://django-oauth-toolkit.readthedocs.io/en/1.5.0/settings.html#allowed-redirect-uri-schemes
+    # This is only needed if you plan on supporting mobile users. Additionally
+    # http should only be here when DEBUG=True as it's recommended to only
+    # allow applications register with https
+    "ALLOWED_REDIRECT_URI_SCHEMES": ["http", "https", "com.oauthlogin.auth"],
+    "PKCE_REQUIRED": False,
+    # Default for PKCE_REQUIRED is False anyway, but I wanted to make a note: use True
     # iff your OAuth clients are mobile apps. Normal JS and HTML
     # files delivered by Django don't need PKCE. SPAs should deploy via
     # Django templates with a script tag pointing to your CDN to take
@@ -93,7 +99,6 @@ OAUTH2_PROVIDER = {
     # won't matter. So long as your request includes a code_challenge,
     # OAuth will check the challenge with the verifier. In other words,
     # you really don't need to set this to True :P
-    "PKCE_REQUIRED": False,
 }
 
 INSTALLED_APPS = [

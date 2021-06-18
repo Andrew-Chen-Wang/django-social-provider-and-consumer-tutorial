@@ -57,7 +57,7 @@ For more details or if you think this is out of date, head to their
 Table of Contents
 - Server/Provider instructions
 - Web Client/Consumer instructions
-- Mobile Client/Consumer instructions
+- Mobile and/or Web (optional) Client/Consumer instructions
 
 <details open>
 <summary><strong>Server/Provider instructions</strong></summary>
@@ -68,10 +68,10 @@ Table of Contents
 1. Add this to `urls.py`: `path("o/", include('oauth2_provider.urls', namespace='oauth2_provider')),`
 1. Add `corsheaders` to `MIDDLEWARE`: `'corsheaders.middleware.CorsMiddleware',`.
    Please read Note 1 below for placement.
-1. In your settings, add: `"REQUEST_APPROVAL_PROMPT": "auto"` in the 
+1. In your settings, add: `"REQUEST_APPROVAL_PROMPT": "auto"` in the
    `OAUTH2_PROVIDER` dictionary in your settings file. The `REQUEST_APPROVAL_PROMPT`
    being set to `auto` means that a user that already signed up doesn't need to
-   authorize the consumer (via a button click) for the rest of the user's login 
+   authorize the consumer (via a button click) for the rest of the user's login
    sessions. Add `CORS_URLS_REGEX = r"^/o/.+$"`.
    In regex, this means you allow any url to be accessed from any origin whose url path
    MUST START with `/o/` and must have more characters
@@ -203,18 +203,18 @@ will be mixed up.
 <details open>
 <summary><strong>Web Client/Consumer instructions</strong></summary>
 
-1. Let's create a consumer using provider compatible workflows from django-allauth. 
-   I'm basing this off
+1. Let's create a consumer using provider compatible workflows from django-allauth.
+   I'm assuming you've already got a Django project set up; I'm basing this off
    [allauth's Google implementation](https://github.com/pennersr/django-allauth/blob/80e07a25803baea4e603251254c7d07ef2ad5bb5/allauth/socialaccount/providers/google/provider.py).
    Visit the following files in the consumer folder:
-   [public/urls.py](./consumer/public/urls.py),
-   [public/views.py](./consumer/public/views.py),
-   [public/provider.py](./consumer/public/provider.py),
-   [public/migrations/0001_initial.py](./consumer/public/migrations/0001_initial.py),
-   [consumer/consumer/urls.py](./consumer/consumer/urls.py),
+   [consumer/public/urls.py (visit Note 2 for explanation)](./consumer/public/urls.py),
+   [consumer/public/views.py (visit Note 3 for explanation)](./consumer/public/views.py),
+   [consumer/public/provider.py (visit Note 4 for explanation)](./consumer/public/provider.py),
+   [consumer/public/migrations/0001_initial.py (visit Note 5 for explanation)](./consumer/public/migrations/0001_initial.py),
+   [consumer/consumer/urls.py (visit Note 6 for explanation)](./consumer/consumer/urls.py),
    and finally the upper portion of settings:
-   [consumer/consumer/settings.py](./consumer/consumer/urls.py).
-1. Make sure your provider lives in a file called `provider.py` or else django-allauth 
+   [consumer/consumer/settings.py (notes in the file itself)](./consumer/consumer/settings.py).
+1. Make sure your provider lives in a file called `provider.py` or else django-allauth
    can't find your provider. Also make sure that `provider.py` is in an app
    that is in the `INSTALLED_APPS` list.
 1. Finally, run both servers. The consumer should be using
@@ -230,13 +230,33 @@ will be mixed up.
 1. The redirect uri should have the domain be the same as the way you're accessing
    the consumer. So if you're logging in from http://localhost:8000, then your
    redirect uri must also use localhost:8000
+1. The [consumer/public/urls.py](./consumer/public/urls.py) implementation is just
+   to add the django-allauth provider urls. These URLs are the basis for how we grab
+   the tokens and register our user.
+1. The [consumer/public/views.py](./consumer/public/views.py) implementation is a
+   django-allauth subclassed view that complete a social authentication workflow
+1. The [consumer/public/provider.py](./consumer/public/provider.py) file is a
+   django-allauth provider that configures a new user and authenticates the user based
+   on the scopes given in the provider's given token.
+1. [consumer/public/migrations/0001_initial.py](./consumer/public/migrations/0001_initial.py)
+   is meant for django-allauth. The package requires we have a site in the Django
+   provided `Site` model. The code is from cookiecutter-django; I made this migration
+   specifically so that we didn't need to create a new Site ourselves via a database CLI.
+1. The [consumer/consumer/urls.py](./consumer/consumer/urls.py) is meant to add our
+   `public` app's urls (which included the provider url). Additionally, you may notice
+   a `TemplateView` being used. In the sample code, I added an index/landing page for
+   debugging purposes to show whether the current user is authenticated or not.
+1. For those wondering why they're going to `/accounts/profile` on login:
+   https://django-allauth.readthedocs.io/en/latest/faq.html#when-i-attempt-to-login-i-run-into-a-404-on-accounts-profile
 
 </details>
-<!-- End of client instructions -->
+<!-- End of web consumer instructions -->
 </details>
 
 <details open>
-<summary><strong>Mobile Client/Consumer instructions</strong></summary>
+<summary><strong>
+Mobile and/or Web (optional) Client/Consumer instructions
+</strong></summary>
 
 <details><summary>Explanation</summary>
 
@@ -252,23 +272,18 @@ visit https://github.com/Andrew-Chen-Wang/react-native-oauth-login for a fuller
 explanation with a for using React Native.
 
 Anyways, the explanation: imagine you're on an app. You press a button that says
-"Sign In with Velnota" (no register button since `django-allauth` auto registers 
-on first login; this can be changed with `SOCIALACCOUNT_AUTO_SIGNUP=False` in 
-your settings). This button is actually a URL that takes you to a social login page
-provided by django-allauth, specifically 
-http://localhost:8000/accounts/custom/login/?process=login. If you recall, 
-`/accounts/custom/` is the beginning of a path to a provider. Allauth has a similar
-format for other OAuth providers (e.g. Google: `/accounts/google/`). This URL
-immediately redirects you to Google's login page. Assuming the user logged in correctly,
-under your registered callback, the consumer's Django receives an access and refresh 
-token.
+"Sign In with Velnota" (no register button since `django-allauth` auto registers
+on first login; this can be changed with `SOCIALACCOUNT_AUTO_SIGNUP=False` in
+your settings). This button is actually a URL that takes you to the provider's
+login page directly without passing the consumer. We want the client to get their
+access and refresh token pair directly from the provider.
 
-Using `SimpleJWT`, we create our own tokens for authenticating against our own backend.
-You can also use `rest_framework.auth_token`, but it's not as safe and not as 
-"standard." Anyhow, the tokens that the consumer (not the mobile client) received
-is encrypted and embedded into a SimpleJWT access and refresh token payload.
-The consumer sends all four tokens: two from SimpleJWT (the consumer's auth
-tokens) and two from the provider (the provider's auth tokens).
+Then the client gives those provider tokens to the mobile consumer. The consumer
+creates its own tokens for the client to use against their endpoints. In this
+exchange, the provider tokens will be encrypted in the consumer tokens for
+use by the consumer whenever they want. If the user has never signed up on
+the consumer end before, using `django-allauth`,
+auto signup is enabled (sort of as we still need to write some more code).
 
 We do this because the tokens given by the provider is for authorization against
 the **provider's** endpoints, not the consumers (having trouble? Imagine you have a
@@ -278,10 +293,56 @@ Thus, we are coding this on our project, that is the consumer, and not on the pr
 which is Google in this case).
 
 So the tokens we receive on the mobile app is for going to the endpoints
-on the consumer and going to authorized-endpoints on the provider.
+on the consumer, and the first request is for going to authorized-endpoints
+on the provider.
 
 </details>
 
+The Tutorial:
+
+1. Let's create a consumer using provider compatible workflows from django-allauth.
+   I'm assuming you've already got a Django project set up; I'm basing this off
+   [allauth's Google implementation](https://github.com/pennersr/django-allauth/blob/80e07a25803baea4e603251254c7d07ef2ad5bb5/allauth/socialaccount/providers/google/provider.py).
+   Visit the following files in the `mobile_consumer` folder:
+   [mobile_consumer/public/urls.py](./mobile_consumer/public/urls.py),
+   [mobile_consumer/public/views.py](./mobile_consumer/public/views.py),
+   [mobile_consumer/public/provider.py](./mobile_consumer/public/provider.py),
+   [mobile_consumer/public/migrations/0001_initial.py](./mobile_consumer/public/migrations/0001_initial.py),
+   [mobile_consumer/mobile_consumer/urls.py](./mobile_consumer/mobile_consumer/urls.py),
+   and finally the upper portion of settings:
+   [mobile_consumer/mobile_consumer/settings.py](./mobile_consumer/mobile_consumer/settings.py).
+1. Register for your application, but, this time, the redirect uri can't be some
+   regular http request. It's going to be a custom scheme that apps use.
+   If you read up on AppAuth repositories or my
+   [React Native implementation](https://github.com/Andrew-Chen-Wang/react-native-oauth-login)
+   repository, this is meant for the redirect uri, for example:
+   `com.oauthlogin.auth://custom/login/callback`
+1. If you're continuing from the web portion, you may be wondering what changed?
+   [views.py](./mobile_consumer/public/views.py) is completely different as we
+   implement our own view for a "callback" mechanism (specifically, it handles
+   saving the tokens and registering the user and what not).
+1. In the provider settings (i.e.
+   [server/server/settings.py](./server/server/settings.py)), we add a new field
+   to the `OAUTH2_PROVIDER` settings:
+   `"ALLOWED_REDIRECT_URI_SCHEMES": ["http", "https", "com.oauthlogin.auth"],`
+   The last value is the scheme from the Step 2.
+
+Finally, you'll end up with something like this:
+
+![](./assets/app.png)
+
+<details><summary>Notes</summary>
+
+1. You may be wondering: why set the SimpleJWT and provider's tokens to never
+   expire? Credentials. Unlike before, the mobile app can't save any username
+   or password for BOTH the provider (i.e., we can't see the username and password for
+   the provider) and the consumer (i.e., the consumer does not use
+   credentials in the first place with the consumer; otherwise, that'd be security
+   risk on the provider end if the provider wanted the user/client to save their
+   provider credentials on a supposedly random consumer, generally speaking).
+
+</details>
+<!-- End of mobile consumer instructions -->
 </details>
 
 ---
