@@ -325,11 +325,11 @@ The Tutorial:
    [server/server/settings.py](./server/server/settings.py)), we add a new field
    to the `OAUTH2_PROVIDER` settings:
    `"ALLOWED_REDIRECT_URI_SCHEMES": ["http", "https", "com.oauthlogin.auth"],`
-   The last value is the scheme from the Step 2.
+   The last value is the scheme from Step 2.
 
 Finally, you'll end up with something like this:
 
-![](./assets/app.png)
+![app image of react native demo](./assets/app.png)
 
 <details><summary>Notes</summary>
 
