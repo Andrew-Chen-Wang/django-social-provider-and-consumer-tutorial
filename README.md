@@ -1,17 +1,13 @@
 # OAuth Provider and Client: Two-Sided Implementation of OAuth + OpenID Connect
 
-Implementing a "server"/provider that becomes a social provider
+Implementing a provider that becomes a social provider
 (i.e. the Velnota in "Signup with Velnota"),
-and a "client"/consumer that allows its users to register using
-said server/provider.
+and a consumer that allows its users/clients to register using
+said provider.
 
 This is mostly for learning but also **I can replicate
 this process really fast. No Googling necessary**. All code
-is just provided here. Note that the terminology
-is incorrect; it's not really "server" and "client"
-but more like "provider" and "consumer". It was midnight;
-I was tired; couldn't think straight after finals; I'm sorry.
-So anyway, I started blasting.
+is just provided here.
 
 ---
 ## Tutorial
@@ -42,12 +38,12 @@ ish. For example, a registration page would be helpful for server.
 
 ### Instructions
 
-The following is happening in the [server](./server) folder.
+The following is happening in the [provider](./provider) folder.
 You can use it as reference in case you get stuck or want
 to double-check something.
 
-We assume that server is a website, and not just some random
-rest framework. It must have a proper website to login from.
+We assume that `provider` is a website, and not just some random
+REST API. It must have a proper website to login from.
 NGL though, you can also start from scratch, and there's still resources
 in Notes sections to get you up to speed in total 30 minutes TOPS (it's a lot).
 
@@ -55,12 +51,12 @@ For more details or if you think this is out of date, head to their
 [docs](https://django-oauth-toolkit.readthedocs.io/en/latest/tutorial/tutorial_01.html).
 
 Table of Contents
-- Server/Provider instructions
-- Web Client/Consumer instructions
-- Mobile and/or Web (optional) Client/Consumer instructions
+- Provider instructions
+- Web Consumer instructions
+- Mobile and/or Web (optional) Consumer instructions
 
 <details open>
-<summary><strong>Server/Provider instructions</strong></summary>
+<summary><strong>Provider instructions</strong></summary>
 
 1. Follow the installation instructions at
    [django-oauth-toolkit's docs](https://django-oauth-toolkit.readthedocs.io/en/latest/install.html)
@@ -77,7 +73,7 @@ Table of Contents
    MUST START with `/o/` and must have more characters
    following that `/o/` prefix (i.e. there must be more to the path to be valid).
 1. Add this to your login form: `<input type="hidden" name="next" value="{{ next }}" />`.
-   It is required that `server` is a website that has a user-faced login form.
+   It is required that `provider` is a website that has a user-faced login form.
    If you are just starting out, read Note 3.
 1. `python manage.py migrate && python manage.py createsuperuser`
 1. Start the server with a different port like: `python manage.py runserver 8001`
@@ -197,11 +193,11 @@ will be mixed up.
    redirect uri must also use localhost:8000
 
 </details>
-<!-- End of server instructions -->
+<!-- End of provider instructions -->
 </details>
 
 <details open>
-<summary><strong>Web Client/Consumer instructions</strong></summary>
+<summary><strong>Web Consumer instructions</strong></summary>
 
 1. Let's create a consumer using provider compatible workflows from django-allauth.
    I'm assuming you've already got a Django project set up; I'm basing this off
@@ -255,7 +251,7 @@ will be mixed up.
 
 <details open>
 <summary><strong>
-Mobile and/or Web (optional) Client/Consumer instructions
+Mobile and/or Web (optional) Consumer instructions
 </strong></summary>
 
 <details><summary>Explanation</summary>
@@ -322,7 +318,7 @@ The Tutorial:
    implement our own view for a "callback" mechanism (specifically, it handles
    saving the tokens and registering the user and what not).
 1. In the provider settings (i.e.
-   [server/server/settings.py](./server/server/settings.py)), we add a new field
+   [provider/server/settings.py](provider/server/settings.py)), we add a new field
    to the `OAUTH2_PROVIDER` settings:
    `"ALLOWED_REDIRECT_URI_SCHEMES": ["http", "https", "com.oauthlogin.auth"],`
    The last value is the scheme from Step 2.
@@ -352,10 +348,6 @@ If you don't need regular signup, create a default account adapter
 in Allauth and set the `is_open_for_signup` method to return False.
 
 ### Extra Notes
-
-I understand the terminology is wrong (i.e. server and client), but I couldn't really
-come up with good terms to use, so I stuck with it (at midnight). Proper terms are
-provider and consumer respectively. I'll rework the names of the projects.
 
 The provider is the one where the user initially signs up.
 The consumer is the one where the user signs up on a different
