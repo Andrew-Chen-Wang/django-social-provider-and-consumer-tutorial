@@ -97,7 +97,9 @@ class TokenObtainPairView(APIView):
             return err_r
         extra_data = resp.json()
         login = provider.sociallogin_from_response(request, extra_data)
-        login.save(request)
+        login.lookup()
+        if not login.is_existing:
+            login.save(request)
 
         # Create SimpleJWT tokens for consumer authentication purposes
         simple_token = RefreshToken.for_user(login.user)
